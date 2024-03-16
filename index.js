@@ -8,25 +8,32 @@ require("./db");
 // port server
 const port = process.env.PORT || 4000;
 
+// import passport.js by auth.js
+const passport = require("./auth");
+
 // cover json into object
 app.use(express.json());
 
-const logRequest = (req, res, next) => {
-  try {
-    console.log(`[${new Date().toLocaleString()}] made to :${req.originalUrl}`);
-    next();
-  } catch (error) {
-    console.log(error);
-  }
+// logRegistrastion
+
+const logUser = (req, res, next) => {
+  console.log(
+    `[${new Date().toLocaleString()}] Made Request : ${req.originalUrl}`
+  );
+  next();
 };
 
-app.use(logRequest);
+app.use(logUser);
 
-app.get("/", (req, res) => {
+app.use(passport.initialize());
+const middleware = passport.authenticate("local", { session: false });
+
+//personRoutes.js
+app.get("/", middleware, (req, res) => {
   res.send("welcom to my page");
 });
 
-//personRoutes.js
+// route files import
 const personRoute = require("./routes/personRoute");
 const itemRoute = require("./routes/itemsRoute");
 
